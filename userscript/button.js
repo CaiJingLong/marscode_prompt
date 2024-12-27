@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         题目内容获取器
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.1.1
 // @description  获取题目编辑器内容
 // @author       Your name
 // @match        https://www.marscode.cn/practice/*?problem_id=*
@@ -15,8 +15,16 @@
     const editor = document
       .querySelector("icube-markdown")
       .shadowRoot.querySelector(".icube-markdown");
-    if (editor) {
-      return editor.textContent;
+
+    const title = document.querySelector(".tabs-container").innerText;
+
+    if (editor && title) {
+      const content = editor.textContent;
+      const no = title.match(/(\d+)/);
+      if (no) {
+        return `${no[0]}: ${content}`;
+      }
+      return `${title}: \n\n${content}`;
     } else {
       return "未找到编辑器";
     }
@@ -51,7 +59,7 @@
   }
 
   function createAnswer() {
-    return createButton("复制答案", getAnswerString, (style) => {});
+    return createButton("复制问题", getAnswerString, (style) => {});
   }
 
   function ojOutput() {
