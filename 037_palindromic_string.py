@@ -13,31 +13,36 @@ def solution(s):
     n = len(s)
     t = list(s)
     
-    # 第一步：构造最大可能的回文
+    # 首先构造一个回文串
     for i in range(n // 2):
         t[n - 1 - i] = t[i]
     
-    # 第二步：找到第一个可以减小的位置
-    pos = -1
-    for i in range(n // 2, -1, -1):
-        if t[i] > 'a':
-            pos = i
-            break
-    
-    if pos == -1:
-        return '-1'
-    
-    # 第三步：减小字符并最大化后续字符
-    t[pos] = chr(ord(t[pos]) - 1)
-    t[n - 1 - pos] = t[pos]
-    for i in range(pos + 1, n - 1 - pos):
-        t[i] = 'z'
-    
-    # 检查是否满足字典序小于s
+    # 如果构造的回文串已经小于s，直接返回
     if ''.join(t) < s:
         return ''.join(t)
-    else:
-        return '-1'
+    
+    # 从中间向左寻找可以减小的位置
+    mid = (n - 1) // 2
+    for i in range(mid, -1, -1):
+        original_char = t[i]
+        if t[i] > 'a':
+            # 减小当前位置的字符
+            t[i] = chr(ord(t[i]) - 1)
+            t[n - 1 - i] = t[i]
+            
+            # 将i+1到n-i-2的位置都填充'z'
+            for j in range(i + 1, n - 1 - i):
+                t[j] = 'z'
+                
+            result = ''.join(t)
+            if result < s:
+                return result
+                
+            # 恢复当前位置的字符，继续寻找下一个可能的位置
+            t[i] = original_char
+            t[n - 1 - i] = original_char
+    
+    return '-1'
 
 
 if __name__ == "__main__":
